@@ -1,4 +1,4 @@
-ยังใช้งานจริงส่วน reflect ไม่ได้
-ระบบชั่วคราว -  Manual sync ยังไม่สามารถ export และ import ได้จริง
+## ยังใช้งานจริงส่วน reflect ไม่ได้
+## ระบบชั่วคราว -  Manual sync ยังไม่สามารถ export และ import ได้จริง
 
-Major part - อยากเป็นระบบ auto sync 
+## Major part - อยากเป็นระบบ auto sync 
