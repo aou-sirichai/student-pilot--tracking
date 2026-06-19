@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Study Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --cream:#F2EFE9;
+  --cream2:#E8E3DB;
+  --green:#4A7C59;
+  --green-l:#D4E6DA;
+  --green-d:#2E5038;
+  --navy:#1C2B3A;
+  --sand:#C9B99A;
+  --amber:#D4891A;
+  --red:#C0392B;
+  --blue:#2980B9;
+  --white:#FAFAF8;
+  --card:#FFFFFF;
+  --text:#1C2B3A;
+  --sub:#8A9BAA;
+  --border:#E2DDD6;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+html,body{height:100%;background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--text);overflow:hidden}
+
+/* ── LAYOUT ── */
+.app{display:flex;flex-direction:column;height:100dvh;max-width:430px;margin:0 auto;background:var(--cream);position:relative;overflow:hidden}
+.screen{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:calc(80px + var(--safe-bottom))}
+.screen::-webkit-scrollbar{display:none}
+
+/* ── STATUS BAR ── */
+.status-bar{height:50px;padding:0 20px;display:flex;align-items:flex-end;padding-bottom:6px;background:var(--cream);flex-shrink:0}
+.status-time{font-size:17px;font-weight:600;color:var(--navy);font-family:'DM Serif Display',serif}
+.status-icons{margin-left:auto;display:flex;gap:6px;align-items:center;color:var(--navy);font-size:14px}
+
+/* ── TOP BAR ── */
+.topbar{padding:8px 20px 12px;background:var(--cream);flex-shrink:0}
+.topbar-row{display:flex;align-items:center;justify-content:space-between}
+.page-title{font-family:'DM Serif Display',serif;font-size:28px;color:var(--navy);line-height:1.1}
+.page-sub{font-size:12px;color:var(--sub);margin-top:2px;font-weight:400}
+.avatar-btn{width:38px;height:38px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:600;border:none;cursor:pointer;flex-shrink:0}
+
+/* ── BOTTOM TAB BAR ── */
+.tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(242,239,233,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;padding:8px 0;padding-bottom:calc(8px + var(--safe-bottom));z-index:100}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 0;border:none;background:none;font-family:'DM Sans',sans-serif;transition:transform .15s}
+.tab-item:active{transform:scale(.9)}
+.tab-icon{font-size:22px;color:var(--sub);transition:color .15s}
+.tab-label{font-size:10px;color:var(--sub);font-weight:500;transition:color .15s}
+.tab-item.active .tab-icon{color:var(--green)}
+.tab-item.active .tab-label{color:var(--green);font-weight:600}
+.tab-center{position:relative}
+.tab-center .tab-icon-wrap{width:52px;height:52px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;margin-top:-18px;box-shadow:0 4px 16px rgba(74,124,89,.4)}
+.tab-center .tab-icon-wrap i{font-size:24px;color:#fff}
+.tab-center .tab-label{color:var(--green);font-weight:600}
+.tab-center.active .tab-icon-wrap{background:var(--green-d)}
+
+/* ── PAGES ── */
+.page{display:none}.page.active{display:block}
+
+/* ── HERO COIN CARD ── */
+.coin-hero{margin:0 16px 14px;background:var(--green);border-radius:20px;padding:20px;position:relative;overflow:hidden}
+.coin-hero::before{content:'';position:absolute;top:-40px;right:-30px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.07)}
+.coin-hero::after{content:'';position:absolute;bottom:-20px;left:-20px;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.05)}
+.coin-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.coin-num{font-family:'DM Serif Display',serif;font-size:48px;color:#fff;line-height:1}
+.coin-label{font-size:13px;color:rgba(255,255,255,.6);margin-top:4px;font-weight:400}
+.coin-badge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:5px 12px;font-size:11px;color:#fff;font-weight:600;display:flex;align-items:center;gap:5px}
+.coin-streak{display:flex;align-items:center;gap:16px;font-size:12px;color:rgba(255,255,255,.7)}
+.coin-streak strong{color:#fff}
+.coin-btns{display:flex;gap:8px;margin-top:14px}
+.coin-btn{flex:1;padding:11px;border-radius:12px;border:none;cursor:pointer;font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;transition:opacity .15s}
+.coin-btn:active{opacity:.75}
+.coin-btn-pri{background:rgba(255,255,255,.95);color:var(--green-d)}
+.coin-btn-sec{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25)}
+
+/* ── SECTION HEADER ── */
+.sec-head{padding:0 20px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.sec-title{font-size:17px;font-weight:600;color:var(--navy)}
+.sec-action{font-size:13px;color:var(--green);font-weight:500;cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif}
+
+/* ── STAT PILLS ── */
+.stat-pills{display:flex;gap:10px;padding:0 16px;margin-bottom:14px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.stat-pills::-webkit-scrollbar{display:none}
+.stat-pill{flex-shrink:0;background:var(--card);border-radius:14px;padding:14px 16px;min-width:100px;border:1px solid var(--border)}
+.pill-lbl{font-size:10px;color:var(--sub);text-transform:uppercase;letter-spacing:.8px;font-weight:600;margin-bottom:4px}
+.pill-val{font-family:'DM Serif Display',serif;font-size:26px;color:var(--navy);line-height:1}
+.pill-unit{font-size:11px;color:var(--sub);margin-top:2px}
+
+/* ── CARDS ── */
+.card{background:var(--card);border-radius:16px;border:1px solid var(--border);margin:0 16px 12px}
+.card-pad{padding:16px}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.card-title{font-size:15px;font-weight:600;color:var(--navy)}
+.chip{font-size:10px;padding:3px 9px;border-radius:10px;font-weight:600;display:inline-flex;align-items:center;gap:3px}
+.chip-green{background:var(--green-l);color:var(--green-d)}
+.chip-amber{background:#fef3e0;color:#9a6000}
+.chip-blue{background:#ddeffe;color:#1a5276}
+.chip-red{background:#fde8e8;color:var(--red)}
+
+/* ── SESSION ROW ── */
+.sess-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)}
+.sess-row:last-child{border-bottom:none}
+.sess-dot{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;color:#fff}
+.sess-info{flex:1;min-width:0}
+.sess-name{font-size:14px;font-weight:600;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sess-meta{font-size:12px;color:var(--sub);margin-top:1px}
+.sess-reflect{font-size:11px;color:var(--sub);font-style:italic;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}
+.sess-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+.sess-date{font-size:11px;color:var(--sub)}
+.badge-sm{font-size:10px;padding:3px 8px;border-radius:8px;font-weight:600;display:inline-block}
+.b-done{background:var(--green-l);color:var(--green-d)}
+.b-pend{background:#fff3cd;color:#856404}
+.b-score{background:#ddeffe;color:#1a5276}
+
+/* ── SUBJECT TABS ── */
+.subj-tabs{display:flex;gap:8px;padding:0 16px 12px;overflow-x:auto;-webkit-overflow-scrolling:touch;flex-shrink:0}
+.subj-tabs::-webkit-scrollbar{display:none}
+.s-tab{flex-shrink:0;font-size:13px;padding:7px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--white);color:var(--sub);cursor:pointer;font-weight:500;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:6px;transition:all .15s}
+.s-tab.active{background:var(--green);border-color:var(--green);color:#fff}
+.s-tab-dot{width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.7}
+
+/* ── LOG FORM ── */
+.log-form{margin:0 16px 12px;background:var(--navy);border-radius:16px;overflow:hidden}
+.log-form-head{padding:12px 16px;background:rgba(255,255,255,.05);display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid rgba(255,255,255,.08)}
+.log-form-head i{font-size:15px;color:var(--green)}
+.lf-grid{display:grid;grid-template-columns:1fr 1fr}
+.lf-field{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.07)}
+.lf-field:nth-child(odd){border-right:1px solid rgba(255,255,255,.07)}
+.lf-field.full{grid-column:1/-1}
+.lf-lbl{font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.6px;font-weight:600;margin-bottom:6px}
+.lf-inp{width:100%;background:transparent;border:none;border-bottom:1.5px solid rgba(255,255,255,.15);color:#fff;font-size:15px;padding:4px 0;outline:none;font-family:'DM Sans',sans-serif;font-weight:400;-webkit-appearance:none}
+.lf-inp::placeholder{color:rgba(255,255,255,.2)}
+.lf-inp[type=date]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.25;cursor:pointer;width:18px;height:18px}
+.lf-sel{width:100%;background:transparent;border:none;border-bottom:1.5px solid rgba(255,255,255,.15);color:#fff;font-size:15px;padding:4px 0;outline:none;font-family:'DM Sans',sans-serif;-webkit-appearance:none;cursor:pointer}
+.lf-sel option{background:#1C2B3A;color:#fff}
+.lf-ta{width:100%;background:transparent;border:none;border-bottom:1.5px solid rgba(255,255,255,.15);color:#fff;font-size:14px;padding:4px 0;outline:none;resize:none;font-family:'DM Sans',sans-serif;line-height:1.6}
+.lf-ta::placeholder{color:rgba(255,255,255,.2)}
+.lf-save{width:100%;padding:16px;background:var(--green);color:#fff;border:none;cursor:pointer;font-size:15px;font-weight:600;letter-spacing:.3px;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s}
+.lf-save:active{background:var(--green-d)}
+
+/* ── LOG HISTORY ── */
+.log-hist-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.log-hist-row:last-child{border-bottom:none}
+.hist-dot{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.hist-body{flex:1;min-width:0}
+.hist-topic{font-size:14px;font-weight:600;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist-meta{font-size:12px;color:var(--sub);margin-top:1px}
+.hist-reflect{font-size:11px;color:var(--sub);font-style:italic;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:170px}
+.del-btn{background:none;border:none;cursor:pointer;color:rgba(0,0,0,.15);font-size:16px;padding:6px;display:flex;align-items:center}
+.del-btn:active{color:var(--red)}
+
+/* ── COUNTDOWN ── */
+.countdown-scroll{display:flex;gap:10px;padding:0 16px 4px;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:12px}
+.countdown-scroll::-webkit-scrollbar{display:none}
+.cd-card{flex-shrink:0;background:var(--card);border-radius:16px;border:1px solid var(--border);padding:16px;width:160px;border-top:3px solid}
+.cd-card.r1{border-top-color:#378ADD}.cd-card.r2{border-top-color:var(--amber)}.cd-card.r3{border-top-color:var(--green)}
+.cd-round{font-size:10px;color:var(--sub);text-transform:uppercase;letter-spacing:.8px;font-weight:600;margin-bottom:6px}
+.cd-days{font-family:'DM Serif Display',serif;font-size:38px;line-height:1;margin-bottom:4px}
+.cd-card.r1 .cd-days{color:#378ADD}.cd-card.r2 .cd-days{color:var(--amber)}.cd-card.r3 .cd-days{color:var(--green)}
+.cd-label{font-size:11px;color:var(--sub);margin-bottom:8px}
+.cd-date{font-size:12px;font-weight:600;color:var(--navy)}
+.cd-focus{font-size:11px;color:var(--sub);margin-top:4px;line-height:1.5}
+.cd-prog{height:4px;background:var(--cream2);border-radius:2px;margin-top:10px;overflow:hidden}
+.cd-prog-fill{height:100%;border-radius:2px}
+.cd-card.r1 .cd-prog-fill{background:#378ADD}.cd-card.r2 .cd-prog-fill{background:var(--amber)}.cd-card.r3 .cd-prog-fill{background:var(--green)}
+
+/* ── QUOTE ── */
+.quote-wrap{margin:0 16px 12px;background:var(--navy);border-radius:20px;padding:24px;text-align:center;position:relative;overflow:hidden}
+.quote-wrap::before{content:'';position:absolute;top:-40px;right:-30px;width:130px;height:130px;border-radius:50%;background:rgba(74,124,89,.15)}
+.quote-icon{font-size:30px;color:var(--green);margin-bottom:14px;display:block;position:relative;z-index:1}
+.quote-text{font-family:'DM Serif Display',serif;font-size:20px;color:#fff;line-height:1.6;margin-bottom:14px;font-style:italic;position:relative;z-index:1}
+.quote-author{font-size:12px;color:var(--sand);font-weight:500;letter-spacing:.5px;text-transform:uppercase;position:relative;z-index:1}
+.quote-date{font-size:11px;color:rgba(255,255,255,.3);margin-top:6px;position:relative;z-index:1}
+.quote-refresh{margin-top:16px;background:rgba(74,124,89,.2);border:1px solid rgba(74,124,89,.4);color:#7DC49A;padding:10px 22px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;position:relative;z-index:1;display:inline-flex;align-items:center;gap:6px}
+.quote-refresh:active{background:rgba(74,124,89,.35)}
+
+/* ── REFLECT ── */
+.mood-row{display:flex;gap:8px;padding:0 16px 12px;overflow-x:auto}
+.mood-row::-webkit-scrollbar{display:none}
+.mood-chip{flex-shrink:0;padding:8px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--white);font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;color:var(--sub);transition:all .15s}
+.mood-chip.selected-happy{background:#E1F5EE;border-color:#4A7C59;color:#2E5038}
+.mood-chip.selected-okay{background:#fff3cd;border-color:#f39c12;color:#856404}
+.mood-chip.selected-hard{background:#fde8e8;border-color:var(--red);color:var(--red)}
+.mood-chip.selected-focus{background:#ddeffe;border-color:#2980b9;color:#1a5276}
+.rp-entry{background:var(--card);border-radius:14px;border:1px solid var(--border);padding:14px;margin:0 16px 10px}
+.rp-entry-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.rp-entry-date{font-size:11px;font-weight:600;color:var(--green)}
+.rp-entry-text{font-size:13px;color:#444;line-height:1.7;white-space:pre-wrap}
+.mood-happy{background:#E1F5EE;color:#2E5038}.mood-okay{background:#fff3cd;color:#856404}
+.mood-hard{background:#fde8e8;color:var(--red)}.mood-focus{background:#ddeffe;color:#1a5276}
+
+/* ── SUMMARY ACCORDION ── */
+.accord{margin:0 16px 10px;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.accord-head{padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:var(--navy)}
+.accord-head:active{background:#f8f8f6}
+.accord-body{display:none}.accord-body.open{display:block}
+.sum-tbl{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+.sum-tbl th{padding:8px 12px;border-bottom:1px solid var(--border);font-size:10px;color:var(--sub);text-align:left;font-weight:600;text-transform:uppercase;letter-spacing:.5px;background:#fafaf8}
+.sum-tbl td{padding:8px 12px;border-bottom:1px solid #f4f4f2;color:#333;vertical-align:top;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sum-tbl tr:last-child td{border-bottom:none}
+.chevr{margin-left:auto;color:var(--sub);font-size:16px;transition:transform .2s}
+.chevr.open{transform:rotate(180deg)}
+.ph1b{background:var(--green-l);color:var(--green-d);border-radius:8px;padding:2px 8px;font-size:10px;font-weight:600;display:inline-block}
+.ph2b{background:#fff3cd;color:#856404;border-radius:8px;padding:2px 8px;font-size:10px;font-weight:600;display:inline-block}
+
+/* ── CHARTS ── */
+.chart-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px;margin-bottom:12px}
+.chart-card{background:var(--card);border-radius:14px;border:1px solid var(--border);padding:14px}
+.chart-card-title{font-size:12px;font-weight:600;color:var(--navy);margin-bottom:10px}
+.chart-h{position:relative;height:140px}
+
+/* ── EMPTY ── */
+.empty-state{text-align:center;padding:32px 20px;color:var(--sub)}
+.empty-state i{font-size:36px;display:block;margin-bottom:10px;color:var(--cream2)}
+.empty-state p{font-size:13px;line-height:1.6}
+
+/* ── NOTIFICATION TOAST ── */
+.toast{position:fixed;top:60px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--navy);color:#fff;padding:12px 20px;border-radius:14px;font-size:13px;font-weight:500;z-index:999;opacity:0;transition:all .25s;white-space:nowrap;pointer-events:none;display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── DIVIDER ── */
+.divider{height:1px;background:var(--border);margin:0 16px 12px}
+
+/* ── FORM CARD (reflect) ── */
+.form-card{margin:0 16px 12px;background:var(--card);border-radius:16px;border:2px solid var(--green);padding:16px}
+.form-card-title{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.fc-field{margin-bottom:12px}
+.fc-label{font-size:11px;color:var(--sub);font-weight:600;text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
+.fc-inp{width:100%;background:var(--cream);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-size:14px;color:var(--navy);font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none}
+.fc-inp:focus{border-color:var(--green);background:#fff}
+.fc-sel{width:100%;background:var(--cream);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-size:14px;color:var(--navy);font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none;cursor:pointer}
+.fc-ta{width:100%;background:var(--cream);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-size:14px;color:var(--navy);font-family:'DM Sans',sans-serif;outline:none;resize:none;line-height:1.7;min-height:90px}
+.fc-ta:focus,.fc-inp:focus,.fc-sel:focus{border-color:var(--green);background:#fff}
+.fc-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fc-btn{width:100%;padding:14px;background:var(--navy);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.fc-btn:active{background:var(--green)}
+
+/* ── SYNC CARD ── */
+.sync-card{margin:0 16px 12px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px}
+.sync-head{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.sync-head i{font-size:17px;color:var(--green)}
+.sync-head span{font-size:14px;font-weight:600;color:var(--navy)}
+.sync-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:12px}
+.sync-row .lbl{color:var(--sub)}
+.sync-row .val{color:var(--navy);font-weight:500}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;margin-right:5px}
+.sync-btn{width:100%;margin-top:10px;padding:11px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px}
+.sync-btn:active{background:var(--green)}
+
+/* ── TODAY'S FOCUS ── */
+.focus-card{margin:0 16px 12px;background:var(--green-l);border:1px solid var(--green);border-radius:16px;padding:16px}
+.focus-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.focus-head i{font-size:16px;color:var(--green-d)}
+.focus-head span{font-size:13px;font-weight:600;color:var(--green-d);text-transform:uppercase;letter-spacing:.5px}
+.focus-text{font-size:14px;color:var(--navy);line-height:1.6}
+
+/* ── FITNESS PILLS / CHARTS ── */
+.fit-trend-card{margin:0 16px 12px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px}
+.fit-trend-title{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.fit-trend-now{font-family:'DM Serif Display',serif;font-size:22px;color:var(--green-d)}
+.consistency-row{display:flex;gap:8px;margin-top:8px}
+.consistency-pill{flex:1;background:var(--cream);border-radius:10px;padding:10px;text-align:center}
+.consistency-pill .cw{font-size:10px;color:var(--sub);font-weight:600;text-transform:uppercase}
+.consistency-pill .cd{font-family:'DM Serif Display',serif;font-size:20px;color:var(--navy);margin-top:2px}
+.goal-bar-wrap{margin-top:6px}
+.goal-bar{height:8px;background:var(--cream2);border-radius:4px;overflow:hidden;margin:8px 0 4px}
+.goal-bar-fill{height:100%;background:var(--green);border-radius:4px}
+.goal-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--sub)}
+.fit-type-tabs{display:flex;gap:8px;padding:0 16px 12px}
+.fit-type-tab{flex:1;text-align:center;padding:8px;border-radius:10px;border:1.5px solid var(--border);background:var(--white);font-size:12px;font-weight:600;color:var(--sub);cursor:pointer}
+.fit-type-tab.active{background:var(--navy);border-color:var(--navy);color:#fff}
+
+/* ── LOG TYPE SWITCHER ── */
+.log-type-tabs{display:flex;gap:8px;padding:0 16px 14px}
+.log-type-tab{flex:1;text-align:center;padding:10px 6px;border-radius:12px;border:1.5px solid var(--border);background:var(--white);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
+.log-type-tab i{font-size:18px;color:var(--sub)}
+.log-type-tab span{font-size:11px;font-weight:600;color:var(--sub)}
+.log-type-tab.active{background:var(--navy);border-color:var(--navy)}
+.log-type-tab.active i,.log-type-tab.active span{color:#fff}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="status-bar">
+    <span class="status-time" id="live-time">12:00</span>
+    <div class="status-icons">
+      <i class="ti ti-wifi"></i>
+      <i class="ti ti-battery-2"></i>
+    </div>
+  </div>
+
+  <div class="topbar">
+    <div class="topbar-row">
+      <div>
+        <div class="page-title" id="pg-title">Pilot Journey</div>
+        <div class="page-sub" id="pg-sub">Cadet Operating System</div>
+      </div>
+      <button class="avatar-btn" onclick="nav('takeoff')">U</button>
+    </div>
+  </div>
+
+  <div class="screen" id="main-screen">
+    <!-- Pages -->
+    <div id="p-home" class="page active"></div>
+    <div id="p-log" class="page"></div>
+    <div id="p-fitness" class="page"></div>
+    <div id="p-takeoff" class="page"></div>
+  </div>
+</div>
+
+<!-- Tab Bar -->
+<div class="tabbar">
+  <button class="tab-item active" onclick="nav('home')" id="tab-home">
+    <i class="ti ti-home tab-icon"></i>
+    <span class="tab-label">Home</span>
+  </button>
+  <button class="tab-item tab-center" onclick="nav('log')" id="tab-log">
+    <div class="tab-icon-wrap"><i class="ti ti-plus"></i></div>
+    <span class="tab-label">Log</span>
+  </button>
+  <button class="tab-item" onclick="nav('fitness')" id="tab-fitness">
+    <i class="ti ti-run tab-icon"></i>
+    <span class="tab-label">Journey</span>
+  </button>
+  <button class="tab-item" onclick="nav('takeoff')" id="tab-takeoff">
+    <i class="ti ti-rocket tab-icon"></i>
+    <span class="tab-label">Take Off</span>
+  </button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DATA ──
+var DATA={
+  phase1:[
+    {key:'english',label:'English',color:'#378ADD',hasScore:true},
+    {key:'physics',label:'Physics',color:'#BA7517',hasScore:true},
+    {key:'math',label:'Math',color:'#4A7C59',hasScore:true},
+    {key:'aptitude',label:'Aptitude',color:'#993556',hasScore:true},
+  ],
+  phase2:[
+    {key:'interview',label:'Interview',color:'#534AB7',hasScore:false},
+    {key:'genphysics',label:'Gen. Physics',color:'#0F6E56',hasScore:false},
+    {key:'readback',label:'Read Back',color:'#993C1D',hasScore:false},
+    {key:'joystick',label:'Joy Stick',color:'#185FA5',hasScore:false},
+    {key:'dernjoot',label:'Dern Joot',color:'#854F0B',hasScore:false},
+    {key:'multitask',label:'Multitask',color:'#3B6D11',hasScore:false},
+  ]
+};
+var ROUNDS=[
+  {label:'Round 1',date:'2027-04-15',color:'#378ADD',focus:'Math · Physics · English · Aptitude',cls:'r1'},
+  {label:'Round 2',date:'2027-09-01',color:'#D4891A',focus:'Aptitude test pro 1',cls:'r2'},
+  {label:'Round 3',date:'2027-11-01',color:'#4A7C59',focus:'Individual professional test',cls:'r3'},
+];
+var PAGES=['home','log','fitness','takeoff'];
+var PAGE_META={
+  home:{title:'Pilot Journey',sub:'Cadet Operating System'},
+  log:{title:'Log',sub:'Study · Exercise · Weight'},
+  fitness:{title:'Journey',sub:'Reflection · Calendar · Progress'},
+  takeoff:{title:'Take Off',sub:'Backup · Settings'},
+};
+var FITNESS_GOAL={name:'Journey Progress',target:20};
+var wallet={currentMiles:0,lifetimeMiles:0};
+var runEntries=[];
+var checkins=[];
+var deviceName=localStorage.getItem('studypro_device')||'';
+var MOODS=[{v:'happy',l:'😊 Motivated',cls:'mood-happy'},{v:'okay',l:'😐 Okay',cls:'mood-okay'},{v:'hard',l:'😓 Tough',cls:'mood-hard'},{v:'focus',l:'🎯 Focused',cls:'mood-focus'}];
+var cInst={};
+var curQ={text:'',author:''};
+var selMood='okay';
+
+// ── localStorage PERSISTENCE ──
+function saveData(){
+  try{localStorage.setItem('studypro_entries',JSON.stringify(entries));
+  localStorage.setItem('studypro_reflections',JSON.stringify(reflections));
+  localStorage.setItem('studypro_runs',JSON.stringify(runEntries));
+  localStorage.setItem('studypro_checkins',JSON.stringify(checkins));
+  localStorage.setItem('studypro_wallet',JSON.stringify(wallet));
+  if(deviceName)localStorage.setItem('studypro_device',deviceName);}catch(e){}
+}
+function loadData(){
+  try{
+    var e=localStorage.getItem('studypro_entries');
+    var r=localStorage.getItem('studypro_reflections');
+    var ru=localStorage.getItem('studypro_runs');
+    var ck=localStorage.getItem('studypro_checkins');
+    var wl=localStorage.getItem('studypro_wallet');
+    if(e){var parsed=JSON.parse(e);Object.keys(parsed).forEach(function(k){if(entries[k])entries[k]=parsed[k];});}
+    if(r){reflections=JSON.parse(r);}
+    if(ru){runEntries=JSON.parse(ru);}
+    if(ck){checkins=JSON.parse(ck);} 
+    if(wl){wallet=JSON.parse(wl);}
+  }catch(e){}
+}
+
+// init entries
+var entries={};
+Object.keys(DATA).forEach(function(ph){DATA[ph].forEach(function(s){entries[s.key]=[];});});
+var reflections=[]; var userHeight=parseFloat(localStorage.getItem('studypro_height')||'175');
+
+// ── UTILS ──
+function today(){return new Date().toISOString().slice(0,10);}
+function daysUntil(ds){var n=new Date();n.setHours(0,0,0,0);var t=new Date(ds);t.setHours(0,0,0,0);return Math.ceil((t-n)/86400000);}
+function allSubjs(){var r=[];['phase1','phase2'].forEach(function(ph){DATA[ph].forEach(function(s){r.push(s);});});return r;}
+function globalStats(){
+  var all=allSubjs();
+  var ts=all.reduce(function(s,x){return s+entries[x.key].length;},0);
+  var tm=all.reduce(function(s,x){return s+entries[x.key].reduce(function(a,e){return a+e.dur;},0);},0);
+  var done=all.reduce(function(s,x){return s+entries[x.key].filter(function(e){return e.done==='Y';}).length;},0);
+  var sc=[];all.forEach(function(x){entries[x.key].forEach(function(e){if(e.score!==null)sc.push(e.score);});});
+  return{ts:ts,tm:tm,done:done,avg:sc.length?Math.round(sc.reduce(function(a,b){return a+b;},0)/sc.length):null};
+}
+function totalMiles(){
+  return wallet.currentMiles||0;
+}
+function streakDays(){
+  var dates=new Set();allSubjs().forEach(function(s){entries[s.key].forEach(function(e){dates.add(e.date);});});
+  var s=0;var d=new Date();
+  while(true){var ds=d.toISOString().slice(0,10);if(!dates.has(ds))break;s++;d.setDate(d.getDate()-1);}
+  return s;
+}
+
+
+function activeDaysCount(){
+ var d=new Set();
+ allSubjs().forEach(function(s){entries[s.key].forEach(function(e){d.add(e.date);});});
+ runEntries.forEach(function(r){d.add(r.date);});
+ checkins.forEach(function(c){d.add(c.date);});
+ return d.size;
+}
+function longestStreak(){
+ var d=new Set();
+ allSubjs().forEach(function(s){entries[s.key].forEach(function(e){d.add(e.date);});});
+ runEntries.forEach(function(r){d.add(r.date);});
+ var arr=Array.from(d).sort();
+ if(!arr.length) return 0;
+ var best=1,cur=1;
+ for(var i=1;i<arr.length;i++){
+  if((new Date(arr[i])-new Date(arr[i-1]))/86400000===1){cur++;best=Math.max(best,cur);} else cur=1;
+ }
+ return best;
+}
+
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.innerHTML='<i class="ti ti-check"></i> '+msg;
+  t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},2000);
+}
+
+
+function consistencyPercent(){
+  var active=activeDaysCount();
+  return Math.min(100, Math.round((active/30)*100));
+}
+
+
+function calcBMI(weight,heightCm){
+ if(!weight||!heightCm) return 0;
+ return (weight/Math.pow(heightCm/100,2)).toFixed(1);
+}
+function bmiStatus(b){
+ b=parseFloat(b||0);
+ if(b<18.5) return 'Underweight';
+ if(b<25) return 'Normal';
+ if(b<30) return 'Overweight';
+ return 'Obese';
+}
+
+
+document.addEventListener('input',function(e){
+ const w=document.getElementById('c-weight');
+ const h=document.getElementById('c-bodyfat');
+ const bmi=document.getElementById('c-rhr');
+ if(w&&h&&bmi){
+   const bw=parseFloat(w.value||0), bh=parseFloat(h.value||0);
+   if(bw>0&&bh>0){ bmi.value=calcBMI(bw,bh)+' ('+bmiStatus(calcBMI(bw,bh))+')';}
+ }
+});
+
+
+function saveReflection(){
+ const d=document.getElementById('jr-date');
+ const m=document.getElementById('jr-mood');
+ const t=document.getElementById('jr-text');
+ if(!t||!t.value.trim()){showToast('Enter reflection');return;}
+ reflections.unshift({date:d.value,mood:m.value,text:t.value});
+ saveData();
+ renderFitness();
+ showToast('Reflection saved');
+}
+function delReflection(i){
+ reflections.splice(i,1);
+ saveData();
+ renderFitness();
+}
+
+// ── LIVE CLOCK ──
+function updateClock(){
+  var now=new Date();
+  var h=now.getHours().toString().padStart(2,'0');
+  var m=now.getMinutes().toString().padStart(2,'0');
+  var el=document.getElementById('live-time');
+  if(el)el.textContent=h+':'+m;
+}
+setInterval(updateClock,30000);updateClock();
+
+// ── NAV ──
+function nav(p){
+  PAGES.forEach(function(n){
+    document.getElementById('p-'+n).classList.remove('active');
+    document.getElementById('tab-'+n).classList.remove('active');
+  });
+  document.getElementById('p-'+p).classList.add('active');
+  document.getElementById('tab-'+p).classList.add('active');
+  var meta=PAGE_META[p];
+  document.getElementById('pg-title').textContent=meta.title;
+  document.getElementById('pg-sub').textContent=meta.sub;
+  document.getElementById('main-screen').scrollTop=0;
+  if(p==='home')renderHome();
+  if(p==='log')renderLog();
+  if(p==='fitness')renderFitness();
+  if(p==='takeoff')renderTakeoff();
+}
+
+
+
+function renderTakeoff(){
+var totalRecords=0;
+Object.keys(entries).forEach(function(k){totalRecords+=entries[k].length;});
+
+var hist = reflections.length ? reflections.map(function(r,i){
+ return '<div class="rp-entry"><div class="rp-entry-head"><span class="chip chip-blue">'+r.date+'</span><span>'+r.mood+'</span><button class="del-btn" onclick="delReflection('+i+')"><i class="ti ti-trash"></i></button></div><div class="rp-entry-text">'+r.text+'</div></div>';
+}).join('') : '<p style="color:#8A9BAA">No reflections yet</p>';
+
+document.getElementById('p-takeoff').innerHTML=
+'<div class="card card-pad"><h3>☁ Backup Center</h3><p>Records: '+totalRecords+'</p><p>Reflections: '+reflections.length+'</p><p>Runs: '+runEntries.length+'</p><p>🟢 Local Storage Active</p><p>Last Backup: Export manually</p><br><button class="sync-btn" onclick="exportData()">Export Backup</button><br><input type="file" onchange="importData(event)" style="margin-top:10px;width:100%"></div>'+
+'<div class="card card-pad"><h3>📝 Reflection Journal</h3><br><input id="jr-date" type="date" value="'+today()+'" style="width:100%;padding:10px;margin-bottom:8px"><select id="jr-mood" style="width:100%;padding:10px;margin-bottom:8px"><option>🎯 Focused</option><option>😊 Motivated</option><option>😐 Okay</option><option>😓 Tough</option></select><textarea id="jr-text" placeholder="What did you learn today?" style="width:100%;min-height:100px;padding:10px;margin-bottom:8px"></textarea><button class="sync-btn" onclick="saveReflection()">Save Reflection</button><div style="margin-top:12px">'+hist+'</div></div>'+
+'<div class="card card-pad"><h3>⚙ Settings</h3><p>Cadet Edition</p></div>';
+}
+
+
+
+function pilotReadinessScore(){
+  var study=Math.min(40, globalStats().ts*2);
+  var fitness=Math.min(25, runEntries.length*2 + checkins.length);
+  var consistency=Math.min(20, consistencyPercent()/5);
+  var streak=Math.min(15, streakDays());
+  return Math.round(study+fitness+consistency+streak);
+}
+function weakestSubjectCard(){
+  var w=allSubjs().filter(function(s){return s.hasScore;}).map(function(s){
+    var sc=entries[s.key].filter(function(e){return e.score!==null;}).map(function(e){return e.score;});
+    return {label:s.label,avg:sc.length?Math.round(sc.reduce((a,b)=>a+b,0)/sc.length):null};
+  }).filter(x=>x.avg!==null).sort((a,b)=>a.avg-b.avg)[0];
+  if(!w) return '<div class="card card-pad"><h3>⚠ Weakest Subject</h3><p>No score data yet</p></div>';
+  return '<div class="card card-pad"><h3>⚠ Weakest Subject</h3><p><b>'+w.label+'</b></p><p>Average Score: '+w.avg+'%</p></div>';
+}
+
+// ── HOME ──
+function getFocusText(){
+  var nextRound=ROUNDS.slice().sort(function(a,b){return daysUntil(a.date)-daysUntil(b.date);})[0];
+  var weakest=allSubjs().filter(function(s){return s.hasScore;}).map(function(s){
+    var sc=entries[s.key].filter(function(e){return e.score!==null;}).map(function(e){return e.score;});
+    return {label:s.label,avg:sc.length?sc.reduce(function(a,b){return a+b;},0)/sc.length:null};
+  }).filter(function(x){return x.avg!==null;}).sort(function(a,b){return a.avg-b.avg;})[0];
+  if(weakest)return weakest.label+' average is '+Math.round(weakest.avg)+'%. Prioritize this before '+nextRound.label+'.';
+  if(runEntries.length===0)return 'Log your first exercise session today.';
+  return nextRound.label+' in '+daysUntil(nextRound.date)+' days. Stay consistent.';
+}
+
+function renderHome(){
+  var st=globalStats();
+  var coins=totalMiles();
+  var streak=streakDays();
+  var allE=[];
+  allSubjs().forEach(function(s){entries[s.key].forEach(function(e){allE.push({type:'study',s:s,e:e,date:e.date});});});
+  runEntries.forEach(function(r){allE.push({type:'run',e:r,date:r.date});});
+  allE.sort(function(a,b){return b.date.localeCompare(a.date);});
+  var recent=allE.slice(0,5);
+
+  var sessHTML=recent.length===0
+    ?'<div class="empty-state"><i class="ti ti-run"></i><p>No activity yet.<br>Tap + to log your first entry.</p></div>'
+    :recent.map(function(x){
+      if(x.type==='run'){
+        return '<div class="sess-row"><div class="sess-dot" style="background:#2980B9;border-radius:12px"><i class="ti ti-run"></i></div><div class="sess-info"><div class="sess-name">Exercise</div><div class="sess-meta">'+x.e.dist+' km · '+x.e.dur+' min</div></div><div class="sess-right"><div class="sess-date">'+x.e.date+'</div></div></div>';
+      }
+      var init=x.s.label.slice(0,2).toUpperCase();
+      var sp=x.s.hasScore&&x.e.score!==null?'<span class="badge-sm b-score">'+x.e.score+'%</span>':'';
+      var db=x.e.done==='Y'?'<span class="badge-sm b-done">Done</span>':'<span class="badge-sm b-pend">Pend</span>';
+      var rf=x.e.reflect?'<div class="sess-reflect">'+x.e.reflect+'</div>':'';
+      return '<div class="sess-row"><div class="sess-dot" style="background:'+x.s.color+';border-radius:12px">'+init+'</div><div class="sess-info"><div class="sess-name">'+x.s.label+'</div><div class="sess-meta">'+x.e.topic+' · '+x.e.dur+' min</div>'+rf+'</div><div class="sess-right"><div class="sess-date">'+x.e.date+'</div><div style="display:flex;gap:4px">'+sp+db+'</div></div></div>';
+    }).join('');
+
+  var nextRound=ROUNDS.slice().sort(function(a,b){return daysUntil(a.date)-daysUntil(b.date);})[0];
+  var dNext=daysUntil(nextRound.date);
+  var cdHTML='<div class="countdown-scroll">'+ROUNDS.map(function(r){var d=daysUntil(r.date);var p=Math.max(5,Math.min(100,100-Math.round(d/600*100)));return '<div class="cd-card '+r.cls+'"><div class="cd-round">'+r.label+'</div><div class="cd-prog"><div class="cd-prog-fill" style="width:'+p+'%"></div></div><div style="margin-top:10px;font-weight:700">'+d+' Days</div><div class="cd-date">📅 '+r.date+'</div></div>';}).join('')+'</div>';
+
+  var studyPills='<div class="stat-pills">'+allSubjs().filter(function(s){return s.hasScore;}).map(function(s){
+    var sc=entries[s.key].filter(function(e){return e.score!==null;}).map(function(e){return e.score;});
+    var avg=sc.length?Math.round(sc.reduce(function(a,b){return a+b;},0)/sc.length):null;
+    var wkMin=entries[s.key].filter(function(e){return daysUntil(e.date)>=-7&&daysUntil(e.date)<=0;}).reduce(function(t,e){return t+e.dur;},0);
+    return '<div class="stat-pill"><div class="pill-lbl">'+s.label+'</div><div class="pill-val" style="color:'+s.color+'">'+(avg!==null?avg+'%':'—')+'</div><div class="pill-unit">'+wkMin+' min/wk</div></div>';
+  }).join('')+'</div>';
+
+  var fitWeight=checkins.length?checkins[checkins.length-1].weight:null;
+  var fitDist=runEntries.reduce(function(t,r){return t+parseFloat(r.dist||0);},0);
+  var trainDays=(function(){var d=new Set();runEntries.forEach(function(r){d.add(r.date);});checkins.forEach(function(c){d.add(c.date);});return d.size;})();
+  var fitPills='<div class="stat-pills"><div class="stat-pill"><div class="pill-lbl">Weight</div><div class="pill-val">'+(fitWeight!==null?fitWeight:'—')+'</div><div class="pill-unit">kg</div></div><div class="stat-pill"><div class="pill-lbl">Distance</div><div class="pill-val">'+fitDist.toFixed(0)+'</div><div class="pill-unit">km total</div></div><div class="stat-pill"><div class="pill-lbl">Training</div><div class="pill-val">'+trainDays+'</div><div class="pill-unit">days logged</div></div><div class="stat-pill"><div class="pill-lbl">Consistency</div><div class="pill-val">'+consistencyPercent()+'%</div><div class="pill-unit">30 days</div></div></div>';
+
+  document.getElementById('p-home').innerHTML=
+    '<div class="sec-head"><span class="sec-title">Journey Calendar</span></div><div style="padding:0 16px 10px;font-size:12px;color:#666">🟢 Today &nbsp;&nbsp; 🔵 Activity &nbsp;&nbsp; ⚪ Empty</div>'+renderJourneyCalendar()
+    +'<div class="stat-pills"><div class="stat-pill"><div class="pill-lbl">Current Streak</div><div class="pill-val">'+streak+'</div><div class="pill-unit">'+(streak>0?('Since '+(function(){var d=new Date();d.setDate(d.getDate()-(streak-1));return d.toISOString().slice(0,10);}()) ):'Start Today')+'</div></div><div class="stat-pill"><div class="pill-lbl">Longest Streak<br><small>Date Range</small></div><div class="pill-val">'+longestStreak()+'</div><div class="pill-unit">best record</div></div><div class="stat-pill"><div class="pill-lbl">Active Days</div><div class="pill-val">'+activeDaysCount()+'</div><div class="pill-unit">logged</div></div></div>'
+    +'<div class="sec-head"><span class="sec-title">Cadet Countdown</span></div>'
+    +'<div style="padding:0 16px 4px">'+cdHTML+'</div>'
+    +'<div class="sec-head"><span class="sec-title">Study Summary</span><button class="sec-action" onclick="nav(\'log\')">Log study</button></div>'
+    +studyPills
+    +'<div class="sec-head"><span class="sec-title">Journey Progress</span><button class="sec-action" onclick="nav(\'fitness\')">View trends</button></div>'
+    +fitPills
+    +'<div class="card card-pad"><h3>✈ Pilot Readiness</h3><div style="font-size:38px;font-weight:700;color:#2E5038">'+pilotReadinessScore()+'/100</div><div style="height:10px;background:#E8E3DB;border-radius:5px;margin-top:10px;overflow:hidden"><div style="height:100%;width:'+pilotReadinessScore()+'%;background:#4A7C59"></div></div><div style="font-size:11px;color:#666;margin-top:6px">'+pilotReadinessScore()+'% Ready</div></div>'+weakestSubjectCard()+'<div class="focus-card"><div class="focus-head"><i class="ti ti-target"></i><span>Today\'s Focus</span></div><div class="focus-text">'+getFocusText()+'</div></div>'
+    +'<div class="sec-head"><span class="sec-title">Daily Motivation</span></div>'
+    +'<div id="home-quote-slot" style="margin:0 16px 12px"></div>'
+    +(function(){
+var lr=reflections.length?reflections[0]:null;
+if(!lr) return '';
+return '<div class="card card-pad"><h3>📝 Latest Reflection</h3><div style="font-size:12px;color:#8A9BAA;margin:6px 0">'+lr.date+' · '+lr.mood+'</div><div style="line-height:1.6">'+(lr.text.length>120?lr.text.substring(0,120)+'...':lr.text)+'</div></div>';
+})()+'<div class="sec-head"><span class="sec-title">Recent Activity</span></div>'
+    +'<div class="card card-pad">'+sessHTML+'</div>';
+  renderQuoteCard();
+}
+// ── QUOTE (compact, shown as a card on Home) ──
+function fetchQuote(cb){
+  var seed=new Date().toISOString().slice(0,10).replace(/-/g,'');
+  var qid=(parseInt(seed)%100)+1;
+  fetch('https://dummyjson.com/quotes/'+qid)
+    .then(function(r){return r.json();})
+    .then(function(d){cb(d.quote,d.author);})
+    .catch(function(){cb('The secret of getting ahead is getting started.','Mark Twain');});
+}
+function refreshQuote(){
+  curQ={text:'',author:''};
+  renderQuoteCard();
+  fetch('https://dummyjson.com/quotes/random').then(function(r){return r.json();}).then(function(d){curQ={text:d.quote,author:d.author};renderQuoteCard();}).catch(function(){curQ={text:'Push yourself, because no one else is going to do it for you.',author:'Unknown'};renderQuoteCard();});
+}
+function renderQuoteCard(){
+  var holder=document.getElementById('home-quote-slot');
+  if(!holder)return;
+  var qInner=curQ.text
+    ?'<i class="ti ti-quote quote-icon" style="font-size:22px;margin-bottom:8px"></i><div class="quote-text" style="font-size:15px">"'+curQ.text+'"</div><div class="quote-author">— '+curQ.author+'</div>'
+    :'<div style="color:rgba(255,255,255,.3);font-size:13px;font-style:italic">Loading...</div>';
+  holder.innerHTML='<div class="quote-wrap" style="padding:18px;margin:0">'+qInner+'<button class="quote-refresh" onclick="refreshQuote()" style="margin-top:10px;padding:8px 16px;font-size:12px"><i class="ti ti-refresh" style="font-size:12px"></i>New quote</button></div>';
+  if(!curQ.text)fetchQuote(function(text,author){curQ={text:text,author:author};renderQuoteCard();});
+}
+
+// ── LOG ──
+var curLogType='study';
+function setLogType(t){curLogType=t;renderLog();}
+
+function renderLog(){
+  var typeTabs='<div class="log-type-tabs">'
+    +'<div class="log-type-tab'+(curLogType==='study'?' active':'')+'" onclick="setLogType(\'study\')"><i class="ti ti-book-2"></i><span>Study</span></div>'
+    +'<div class="log-type-tab'+(curLogType==='run'?' active':'')+'" onclick="setLogType(\'run\')"><i class="ti ti-run"></i><span>Exercise</span></div>'
+    +'<div class="log-type-tab'+(curLogType==='checkin'?' active':'')+'" onclick="setLogType(\'checkin\')"><i class="ti ti-clipboard-check"></i><span>Weight</span></div>'
+    +'</div>';
+  if(curLogType==='study')document.getElementById('p-log').innerHTML=typeTabs+buildStudyLogHTML();
+  if(curLogType==='run')document.getElementById('p-log').innerHTML=typeTabs+buildRunLogHTML();
+  if(curLogType==='checkin')document.getElementById('p-log').innerHTML=typeTabs+buildCheckinLogHTML();
+}
+
+var curSelKey='english';
+function setLogSubj(key){curSelKey=key;renderLog();}
+
+function buildStudyLogHTML(){
+  var key=curSelKey;
+  var subj=allSubjs().find(function(s){return s.key===key;})||allSubjs()[0];
+  var es=entries[subj.key];
+  var tm=es.reduce(function(s,e){return s+e.dur;},0);
+  var sc=es.filter(function(e){return e.score!==null;}).map(function(e){return e.score;});
+  var avg=sc.length?Math.round(sc.reduce(function(a,b){return a+b;},0)/sc.length):null;
+
+  var scField=subj.hasScore
+    ?'<div class="lf-field"><div class="lf-lbl">Score (%)</div><input class="lf-inp" type="number" id="f-sc" min="0" max="100" placeholder="0–100"></div>'
+    :'<div class="lf-field"><div class="lf-lbl">Score</div><input class="lf-inp" disabled placeholder="N/A" style="color:rgba(255,255,255,.2)"></div>';
+
+  var histHTML=es.length===0
+    ?'<div class="empty-state"><i class="ti ti-history"></i><p>No sessions logged for<br><strong>'+subj.label+'</strong> yet.</p></div>'
+    :es.slice().reverse().map(function(e,ri){
+      var i=es.length-1-ri;
+      var sp=subj.hasScore&&e.score!==null?'<span class="badge-sm b-score">'+e.score+'%</span>':'';
+      var db=e.done==='Y'?'<span class="badge-sm b-done">Done</span>':'<span class="badge-sm b-pend">Pend</span>';
+      var rf=e.reflect?'<div class="hist-reflect">'+e.reflect+'</div>':'';
+      return '<div class="log-hist-row"><div class="hist-dot" style="background:'+subj.color+'">'+(ri+1)+'</div><div class="hist-body"><div class="hist-topic">'+e.topic+'</div><div class="hist-meta">'+e.date+' · '+e.dur+' min</div>'+rf+'</div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">'+sp+db+'<button class="del-btn" onclick="delEntry(\''+key+'\','+i+')"><i class="ti ti-trash"></i></button></div></div>';
+    }).join('');
+
+  var allTabs='<div class="subj-tabs">'+DATA.phase1.map(function(s){return '<div class="s-tab'+(s.key===curSelKey?' active':'')+'" onclick="setLogSubj(\''+s.key+'\')"><span class="s-tab-dot" style="background:'+s.color+'"></span>'+s.label+'</div>';}).join('')+'</div>'
+    +'<div class="subj-tabs" style="padding-top:0">'+DATA.phase2.map(function(s){return '<div class="s-tab'+(s.key===curSelKey?' active':'')+'" onclick="setLogSubj(\''+s.key+'\')"><span class="s-tab-dot" style="background:'+s.color+'"></span>'+s.label+'</div>';}).join('')+'</div>';
+
+  return allTabs
+    +'<div class="stat-pills"><div class="stat-pill"><div class="pill-lbl">Sessions</div><div class="pill-val">'+es.length+'</div><div class="pill-unit">'+subj.label+'</div></div><div class="stat-pill"><div class="pill-lbl">Time</div><div class="pill-val">'+tm+'</div><div class="pill-unit">min total</div></div><div class="stat-pill"><div class="pill-lbl">Avg score</div><div class="pill-val">'+(avg!==null?avg:'—')+'</div><div class="pill-unit">'+(avg!==null?'%':'no score')+'</div></div></div>'
+    +'<div class="log-form"><div class="log-form-head"><i class="ti ti-plus"></i>Log session — '+subj.label+'</div>'
+    +'<div class="lf-grid">'
+    +'<div class="lf-field"><div class="lf-lbl">Date</div><input class="lf-inp" type="date" id="f-dt" value="'+today()+'"></div>'
+    +'<div class="lf-field"><div class="lf-lbl">Duration (min)</div><input class="lf-inp" type="number" id="f-du" min="1" placeholder="60" inputmode="numeric"></div>'
+    +'</div>'
+    +'<div class="lf-field full"><div class="lf-lbl">Topic / what you studied</div><input class="lf-inp" type="text" id="f-tp" placeholder="e.g. Chapter 3: Kinematics"></div>'
+    +'<div class="lf-grid">'
+    +scField
+    +'<div class="lf-field"><div class="lf-lbl">Completed?</div><select class="lf-sel" id="f-dn"><option value="Y">✓ Yes — done</option><option value="N">⏳ No — pending</option></select></div>'
+    +'</div>'
+    +'<div class="lf-field full" style="border-bottom:none"><div class="lf-lbl">Quick reflection</div><textarea class="lf-ta" id="f-rf" placeholder="What did you learn? Any takeaway?" rows="2"></textarea></div>'
+    +'<button class="lf-save" onclick="addEntry(\''+key+'\')"><i class="ti ti-check"></i>Save session</button>'
+    +'</div>'
+    +'<div class="sec-head" style="margin-top:14px"><span class="sec-title">History</span><span class="chip chip-green">'+es.length+'</span></div>'
+    +'<div class="card card-pad">'+histHTML+'</div>'
+    +'<div class="sec-head" style="margin-top:14px"><span class="sec-title">All subjects</span><button class="sec-action" onclick="toggleCompareCharts()">'+(showCompare?'Hide':'Compare')+'</button></div>'
+    +'<div id="compare-charts-slot">'+(showCompare?buildStudyChartsHTML():'')+'</div>';
+}
+
+var showCompare=false;
+function toggleCompareCharts(){showCompare=!showCompare;renderLog();}
+
+function addEntry(key){
+  var date=document.getElementById('f-dt').value;
+  if(!date){showToast('Please enter a date');return;}
+  var dur=parseInt(document.getElementById('f-du').value)||0;
+  var topic=document.getElementById('f-tp').value||'—';
+  var scEl=document.getElementById('f-sc');
+  var score=scEl&&!scEl.disabled&&scEl.value!==''?parseFloat(scEl.value):null;
+  var done=document.getElementById('f-dn').value;
+  var reflect=document.getElementById('f-rf').value||'';
+  entries[key].push({date:date,dur:dur,topic:topic,score:score,done:done,reflect:reflect});
+  saveData();
+  var miles=Math.floor(dur/10);
+  wallet.currentMiles+=miles;
+  wallet.lifetimeMiles+=miles;
+  saveData();
+  showToast('✈ +'+miles+' Miles');
+  renderLog();
+}
+function delEntry(key,i){
+  if(!confirm('Delete this session?'))return;
+  entries[key].splice(i,1);saveData();renderLog();
+}
+
+// ── RUNNING LOG ──
+function buildRunLogHTML(){
+  var rs=runEntries;
+  var totalKm=rs.reduce(function(t,r){return t+parseFloat(r.dist||0);},0);
+  var totalMin=rs.reduce(function(t,r){return t+(r.dur||0);},0);
+  var histHTML=rs.length===0
+    ?'<div class="empty-state"><i class="ti ti-run"></i><p>No exercise logged yet.</p></div>'
+    :rs.slice().reverse().map(function(r,ri){
+      var i=rs.length-1-ri;
+      var rf=r.notes?'<div class="hist-reflect">'+r.notes+'</div>':'';
+      return '<div class="log-hist-row"><div class="hist-dot" style="background:#2980B9"><i class="ti ti-run" style="font-size:14px"></i></div><div class="hist-body"><div class="hist-topic">'+r.dist+' km</div><div class="hist-meta">'+r.date+' · '+r.dur+' min · pace '+r.pace+' · RPE '+r.rpe+'</div>'+rf+'</div><button class="del-btn" onclick="delRun('+i+')"><i class="ti ti-trash"></i></button></div>';
+    }).join('');
+
+  return '<div class="stat-pills"><div class="stat-pill"><div class="pill-lbl">Runs</div><div class="pill-val">'+rs.length+'</div><div class="pill-unit">total</div></div><div class="stat-pill"><div class="pill-lbl">Distance</div><div class="pill-val">'+totalKm.toFixed(1)+'</div><div class="pill-unit">km</div></div><div class="stat-pill"><div class="pill-lbl">Time</div><div class="pill-val">'+totalMin+'</div><div class="pill-unit">min</div></div></div>'
+    +'<div class="log-form"><div class="log-form-head"><i class="ti ti-plus"></i>Log exercise</div>'
+    +'<div class="lf-grid">'
+    +'<div class="lf-field"><div class="lf-lbl">Date</div><input class="lf-inp" type="date" id="r-dt" value="'+today()+'"></div>'
+    +'<div class="lf-field"><div class="lf-lbl">Distance (km)</div><input class="lf-inp" type="number" step="0.1" id="r-dist" placeholder="5.0"></div>'
+    +'</div>'
+    +'<div class="lf-grid">'
+    +'<div class="lf-field"><div class="lf-lbl">Duration (min)</div><input class="lf-inp" type="number" id="r-dur" placeholder="30"></div>'
+    +'<div class="lf-field"><div class="lf-lbl">Pace (min/km)</div><input class="lf-inp" type="text" id="r-pace" placeholder="6:00"></div>'
+    +'</div>'
+    +'<div class="lf-field full"><div class="lf-lbl">RPE (1–10 effort)</div><input class="lf-inp" type="number" min="1" max="10" id="r-rpe" placeholder="6"></div>'
+    +'<div class="lf-field full" style="border-bottom:none"><div class="lf-lbl">Notes</div><textarea class="lf-ta" id="r-notes" placeholder="Route, weather, how it felt..." rows="2"></textarea></div>'
+    +'<button class="lf-save" onclick="addRun()"><i class="ti ti-check"></i>Save exercise</button>'
+    +'</div>'
+    +'<div class="sec-head" style="margin-top:14px"><span class="sec-title">History</span><span class="chip chip-blue">'+rs.length+'</span></div>'
+    +'<div class="card card-pad">'+histHTML+'</div>';
+}
+function addRun(){
+  var date=document.getElementById('r-dt').value;
+  if(!date){showToast('Please enter a date');return;}
+  var dist=parseFloat(document.getElementById('r-dist').value)||0;
+  var dur=parseInt(document.getElementById('r-dur').value)||0;
+  var pace=document.getElementById('r-pace').value||'—';
+  var rpe=document.getElementById('r-rpe').value||'—';
+  var notes=document.getElementById('r-notes').value||'';
+  runEntries.push({date:date,dist:dist,dur:dur,pace:pace,rpe:rpe,notes:notes});
+  var miles=Math.floor(dist/3);
+  wallet.currentMiles+=miles;
+  wallet.lifetimeMiles+=miles;
+  saveData();
+  showToast('✈ +'+miles+' Miles');
+  renderLog();
+}
+function delRun(i){
+  if(!confirm('Delete this run?'))return;
+  runEntries.splice(i,1);saveData();renderLog();
+}
+
+// ── WEEKLY CHECK-IN LOG ──
+function buildCheckinLogHTML(){
+  var cs=checkins;
+  var histHTML=cs.length===0
+    ?'<div class="empty-state"><i class="ti ti-clipboard-check"></i><p>No check-ins logged yet.</p></div>'
+    :cs.slice().reverse().map(function(c,ri){
+      var i=cs.length-1-ri;
+      var rf=c.notes?'<div class="hist-reflect">'+c.notes+'</div>':'';
+      return '<div class="log-hist-row"><div class="hist-dot" style="background:var(--green)"><i class="ti ti-clipboard-check" style="font-size:14px"></i></div><div class="hist-body"><div class="hist-topic">'+c.weight+' kg · '+c.bodyfat+'% BF</div><div class="hist-meta">'+c.date+' · RHR '+c.rhr+' bpm · sleep '+c.sleep+'h</div>'+rf+'</div><button class="del-btn" onclick="delCheckin('+i+')"><i class="ti ti-trash"></i></button></div>';
+    }).join('');
+
+  return '<div class="log-form"><div class="log-form-head"><i class="ti ti-plus"></i>Weight & BMI</div>'
+    +'<div class="lf-grid">'
+    +'<div class="lf-field"><div class="lf-lbl">Date</div><input class="lf-inp" type="date" id="c-dt" value="'+today()+'"></div>'
+    +'<div class="lf-field"><div class="lf-lbl">Weight (kg)</div><input class="lf-inp" type="number" step="0.1" id="c-weight" placeholder="68.0"></div>'
+    +'</div>'
+    +'<div class="lf-grid">'
+    +'<div class="lf-field"><div class="lf-lbl">Height (cm)</div><input class="lf-inp" type="number" step="0.1" id="c-bodyfat" placeholder="175"></div>'
+    +'<div class="lf-field"><div class="lf-lbl">BMI (Auto)</div><input class="lf-inp" type="text" id="c-rhr" placeholder="Auto" readonly></div>'
+    +'</div>'
+    +'<div class="lf-field full"><div class="lf-lbl">Notes</div><input class="lf-inp" type="number" step="0.5" id="c-sleep" placeholder="7.5"></div>'
+    +'<div class="lf-field full" style="border-bottom:none"><div class="lf-lbl">Notes</div><textarea class="lf-ta" id="c-notes" placeholder="How are you feeling this week?" rows="2"></textarea></div>'
+    +'<button class="lf-save" onclick="addCheckin()"><i class="ti ti-check"></i>Save check-in</button>'
+    +'</div>'
+    +'<div class="sec-head" style="margin-top:14px"><span class="sec-title">History</span><span class="chip chip-green">'+cs.length+'</span></div>'
+    +'<div class="card card-pad">'+histHTML+'</div>';
+}
+function addCheckin(){
+  var date=document.getElementById('c-dt').value;
+  if(!date){showToast('Please enter a date');return;}
+  var weight=parseFloat(document.getElementById('c-weight').value)||0;
+  var bodyfat=parseFloat(document.getElementById('c-bodyfat').value)||0;
+  var rhr=parseInt(document.getElementById('c-rhr').value)||0;
+  var sleep=parseFloat(document.getElementById('c-sleep').value)||0;
+  var notes=document.getElementById('c-notes').value||'';
+  checkins.push({date:date,weight:weight,bodyfat:bodyfat,rhr:rhr,sleep:sleep,notes:notes});
+  saveData();showToast('Check-in saved!');renderLog();
+}
+function delCheckin(i){
+  if(!confirm('Delete this check-in?'))return;
+  checkins.splice(i,1);saveData();renderLog();
+}
+
+// ── SUMMARY ──
+function buildStudyChartsHTML(){
+  var st=globalStats();
+  var all=allSubjs();
+  var labels=all.map(function(s){return s.label;});
+  var shortL=all.map(function(s){return s.label.length>7?s.label.slice(0,5)+'…':s.label;});
+  var colors=all.map(function(s){return s.color;});
+  var sessD=all.map(function(s){return entries[s.key].length;});
+  var minsD=all.map(function(s){return entries[s.key].reduce(function(t,e){return t+e.dur;},0);});
+  var scoresD=all.map(function(s){var sc=entries[s.key].filter(function(e){return e.score!==null;}).map(function(e){return e.score;});return sc.length?Math.round(sc.reduce(function(a,b){return a+b;},0)/sc.length):0;});
+  var doneD=all.map(function(s){return entries[s.key].filter(function(e){return e.done==='Y';}).length;});
+  var pendD=all.map(function(s){return entries[s.key].filter(function(e){return e.done==='N';}).length;});
+
+  var accordHTML='';
+  ['phase1','phase2'].forEach(function(ph){
+    var phl=ph==='phase1'?'Phase 1':'Phase 2';var phc=ph==='phase1'?'ph1b':'ph2b';
+    var tot=DATA[ph].reduce(function(s,x){return s+entries[x.key].length;},0);
+    accordHTML+='<div class="accord"><div class="accord-head" onclick="toggleAccord(this)"><span class="'+phc+'">'+phl+'</span><span style="font-size:12px;color:var(--sub);margin-left:8px">'+DATA[ph].length+' subj · '+tot+' sessions</span><i class="ti ti-chevron-down chevr"></i></div><div class="accord-body">';
+    DATA[ph].forEach(function(subj){
+      var es=entries[subj.key];var mins=es.reduce(function(s,e){return s+e.dur;},0);
+      var sc=es.filter(function(e){return e.score!==null;}).map(function(e){return e.score;});
+      var avg=sc.length?Math.round(sc.reduce(function(a,b){return a+b;},0)/sc.length):null;
+      accordHTML+='<div style="border-top:1px solid var(--border)"><div class="accord-head" style="padding:12px 16px" onclick="toggleAccord(this)"><span style="width:8px;height:8px;border-radius:50%;background:'+subj.color+';display:inline-block;flex-shrink:0"></span><span style="font-size:13px">'+subj.label+'</span><span style="font-size:11px;color:var(--sub);margin-left:6px">'+es.length+' · '+mins+'min'+(subj.hasScore&&avg!==null?' · '+avg+'%':'')+'</span><i class="ti ti-chevron-down chevr"></i></div><div class="accord-body">';
+      if(es.length===0){accordHTML+='<div style="padding:12px 16px;text-align:center;color:var(--sub);font-size:12px">No sessions yet</div>';}
+      else{accordHTML+='<table class="sum-tbl"><thead><tr><th>Date</th><th>Topic</th><th>Min</th><th>Score</th><th>Status</th></tr></thead><tbody>';es.forEach(function(e){var sp=subj.hasScore&&e.score!==null?'<span class="badge-sm b-score">'+e.score+'%</span>':'—';var db=e.done==='Y'?'<span class="badge-sm b-done">✓</span>':'<span class="badge-sm b-pend">…</span>';accordHTML+='<tr><td>'+e.date+'</td><td>'+e.topic+'</td><td>'+e.dur+'</td><td>'+sp+'</td><td>'+db+'</td></tr>';});accordHTML+='</tbody></table>';}
+      accordHTML+='</div></div>';
+    });
+    accordHTML+='</div></div>';
+  });
+
+  setTimeout(function(){
+    ['c-pie','c-bar','c-sc','c-dp'].forEach(function(id){if(cInst[id]){cInst[id].destroy();delete cInst[id];}});
+    var pieEl=document.getElementById('c-pie');
+    if(!pieEl)return;
+    var opts={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}};
+    cInst['c-pie']=new Chart(pieEl,{type:'pie',data:{labels:labels,datasets:[{data:sessD.map(function(v){return v||.1;}),backgroundColor:colors,borderWidth:0}]},options:Object.assign({},opts)});
+    document.getElementById('c-pie-leg').innerHTML=all.map(function(s,i){return '<span style="display:flex;align-items:center;gap:3px;font-size:10px;color:#666"><span style="width:7px;height:7px;border-radius:2px;background:'+s.color+';display:inline-block"></span>'+s.label+' ('+sessD[i]+')</span>';}).join('');
+    cInst['c-bar']=new Chart(document.getElementById('c-bar'),{type:'bar',data:{labels:shortL,datasets:[{data:minsD,backgroundColor:colors,borderWidth:0,borderRadius:3}]},options:Object.assign({},opts,{scales:{x:{ticks:{font:{size:9}},grid:{display:false}},y:{ticks:{font:{size:9}},grid:{color:'rgba(0,0,0,.05)'}}}})});
+    cInst['c-sc']=new Chart(document.getElementById('c-sc'),{type:'bar',data:{labels:shortL,datasets:[{data:scoresD,backgroundColor:colors,borderWidth:0,borderRadius:3}]},options:Object.assign({},opts,{scales:{x:{ticks:{font:{size:9}},grid:{display:false}},y:{min:0,max:100,ticks:{callback:function(v){return v+'%';},font:{size:9}},grid:{color:'rgba(0,0,0,.05)'}}}})});
+    cInst['c-dp']=new Chart(document.getElementById('c-dp'),{type:'bar',data:{labels:shortL,datasets:[{label:'Done',data:doneD,backgroundColor:'#4A7C59',borderWidth:0},{label:'Pending',data:pendD,backgroundColor:'#D4891A',borderWidth:0}]},options:Object.assign({},opts,{scales:{x:{stacked:true,ticks:{font:{size:9}},grid:{display:false}},y:{stacked:true,ticks:{font:{size:9}},grid:{color:'rgba(0,0,0,.05)'}}}})});
+  },0);
+
+  return '<div class="stat-pills" style="margin-bottom:14px"><div class="stat-pill"><div class="pill-lbl">Sessions</div><div class="pill-val">'+st.ts+'</div></div><div class="stat-pill"><div class="pill-lbl">Hours</div><div class="pill-val">'+(st.tm/60).toFixed(1)+'</div></div><div class="stat-pill"><div class="pill-lbl">Done</div><div class="pill-val">'+st.done+'</div></div><div class="stat-pill"><div class="pill-lbl">Avg score</div><div class="pill-val">'+(st.avg!==null?st.avg+'%':'—')+'</div></div></div>'
+    +'<div class="chart-pair"><div class="chart-card"><div class="chart-card-title">Sessions by subject</div><div class="chart-h"><canvas id="c-pie" role="img" aria-label="Pie chart">Chart</canvas></div><div id="c-pie-leg" style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px"></div></div><div class="chart-card"><div class="chart-card-title">Study time (min)</div><div class="chart-h"><canvas id="c-bar" role="img" aria-label="Bar chart">Chart</canvas></div></div></div>'
+    +'<div class="chart-pair"><div class="chart-card"><div class="chart-card-title">Avg score (%)</div><div class="chart-h"><canvas id="c-sc" role="img" aria-label="Score chart">Chart</canvas></div></div><div class="chart-card"><div class="chart-card-title">Done vs pending</div><div class="chart-h"><canvas id="c-dp" role="img" aria-label="Done chart">Chart</canvas></div></div></div>'
+    +'<div class="sec-head"><span class="sec-title">Detailed log</span></div>'
+    +accordHTML;
+}
+
+function toggleAccord(el){var b=el.nextElementSibling;var c=el.querySelector('.chevr');b.classList.toggle('open');if(c)c.classList.toggle('open');}
+
+// ── FITNESS (trends only, no data entry) ──
+function weekKeyOf(dateStr){
+  var d=new Date(dateStr);
+  var onejan=new Date(d.getFullYear(),0,1);
+  var week=Math.ceil((((d-onejan)/86400000)+onejan.getDay()+1)/7);
+  return d.getFullYear()+'-W'+week;
+}
+function renderFitness(){
+  var el=document.getElementById('p-fitness');
+  var sortedCheckins=checkins.slice().sort(function(a,b){return a.date.localeCompare(b.date);});
+  var sortedRuns=runEntries.slice().sort(function(a,b){return a.date.localeCompare(b.date);});
+
+  var curWeight=sortedCheckins.length?sortedCheckins[sortedCheckins.length-1].weight:null;
+  var totalKm=sortedRuns.reduce(function(t,r){return t+parseFloat(r.dist||0);},0);
+
+  // weekly distance buckets (last 4 weeks present in data)
+  var distByWeek={};
+  sortedRuns.forEach(function(r){var wk=weekKeyOf(r.date);distByWeek[wk]=(distByWeek[wk]||0)+parseFloat(r.dist||0);});
+  var weekKeys=Object.keys(distByWeek).sort();
+  var last4Weeks=weekKeys.slice(-4);
+
+  // training consistency: days with run or checkin, grouped by week, last 3 weeks
+  var daysByWeek={};
+  sortedRuns.forEach(function(r){var wk=weekKeyOf(r.date);daysByWeek[wk]=daysByWeek[wk]||new Set();daysByWeek[wk].add(r.date);});
+  sortedCheckins.forEach(function(c){var wk=weekKeyOf(c.date);daysByWeek[wk]=daysByWeek[wk]||new Set();daysByWeek[wk].add(c.date);});
+  var consistWeeks=Object.keys(daysByWeek).sort().slice(-3);
+
+  var weightTrendHTML=sortedCheckins.length===0
+    ?'<div class="empty-state" style="padding:20px"><i class="ti ti-scale"></i><p>No weight check-ins yet.<br>Log one from the Log tab.</p></div>'
+    :'<div class="chart-h" style="height:140px"><canvas id="fit-weight" role="img" aria-label="Weight trend chart">Weight trend.</canvas></div>';
+
+  var distTrendHTML=last4Weeks.length===0
+    ?'<div class="empty-state" style="padding:20px"><i class="ti ti-route"></i><p>No exercise logged yet.</p></div>'
+    :'<div class="chart-h" style="height:140px"><canvas id="fit-dist" role="img" aria-label="Distance trend chart">Distance trend.</canvas></div>';
+
+  var consistHTML=consistWeeks.length===0
+    ?'<div class="empty-state" style="padding:20px"><i class="ti ti-calendar-stats"></i><p>No training days logged yet.</p></div>'
+    :'<div class="consistency-row">'+consistWeeks.map(function(wk,i){
+      return '<div class="consistency-pill"><div class="cw">Week '+(i+1)+'</div><div class="cd">'+daysByWeek[wk].size+'</div><div style="font-size:10px;color:var(--sub)">days</div></div>';
+    }).join('')+'</div>';
+
+  var goalPct=Math.min(100,Math.round(totalKm/FITNESS_GOAL.target*100));
+
+  el.innerHTML=
+    '<div class="stat-pills"><div class="stat-pill"><div class="pill-lbl">Weight</div><div class="pill-val">'+(curWeight!==null?curWeight:'—')+'</div><div class="pill-unit">kg</div></div><div class="stat-pill"><div class="pill-lbl">Distance</div><div class="pill-val">'+totalKm.toFixed(0)+'</div><div class="pill-unit">km total</div></div><div class="stat-pill"><div class="pill-lbl">Runs</div><div class="pill-val">'+runEntries.length+'</div><div class="pill-unit">logged</div></div><div class="stat-pill"><div class="pill-lbl">Check-ins</div><div class="pill-val">'+checkins.length+'</div><div class="pill-unit">logged</div></div></div>'
+    +'<div class="fit-trend-card"><div class="fit-trend-title"><span>Weight Trend</span><span class="fit-trend-now">'+(curWeight!==null?curWeight+' kg':'—')+'</span></div>'+weightTrendHTML+'</div>'
+    +'<div class="fit-trend-card"><div class="fit-trend-title"><span>Distance Trend</span><span class="fit-trend-now">'+totalKm.toFixed(0)+' km</span></div>'+distTrendHTML+'</div>'
+    +'<div class="fit-trend-card"><div class="fit-trend-title"><span>Training Consistency</span></div>'+consistHTML+'</div>'
+    +'<div class="fit-trend-card"><div class="fit-trend-title"><span>Exercise Goal</span><span class="chip chip-blue">'+FITNESS_GOAL.name+'</span></div>'
+    +'<div class="goal-bar-wrap"><div class="goal-bar"><div class="goal-bar-fill" style="width:'+goalPct+'%"></div></div><div class="goal-meta"><span>'+totalKm.toFixed(0)+' / '+FITNESS_GOAL.target+' km</span><span>'+goalPct+'%</span></div></div>'
+    +'</div>';
+
+  ['fit-weight','fit-dist'].forEach(function(id){if(cInst[id]){cInst[id].destroy();delete cInst[id];}});
+  if(sortedCheckins.length){
+    cInst['fit-weight']=new Chart(document.getElementById('fit-weight'),{
+      type:'line',
+      data:{labels:sortedCheckins.map(function(c){return c.date.slice(5);}),datasets:[{data:sortedCheckins.map(function(c){return c.weight;}),borderColor:'#4A7C59',backgroundColor:'rgba(74,124,89,.08)',fill:true,tension:.3,borderWidth:2,pointRadius:3}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:9}},grid:{display:false}},y:{ticks:{font:{size:9}},grid:{color:'rgba(0,0,0,.05)'}}}}
+    });
+  }
+  if(last4Weeks.length){
+    cInst['fit-dist']=new Chart(document.getElementById('fit-dist'),{
+      type:'bar',
+      data:{labels:last4Weeks.map(function(wk,i){return 'Wk '+(i+1);}),datasets:[{data:last4Weeks.map(function(wk){return distByWeek[wk];}),backgroundColor:'#2980B9',borderRadius:4}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:9}},grid:{display:false}},y:{ticks:{font:{size:9}},grid:{color:'rgba(0,0,0,.05)'}}}}
+    });
+  }
+}
+
+// ── REFLECT ──
+function renderReflect(){
+  var el=document.getElementById('p-reflect');
+  var moodOpts=MOODS.map(function(m){return '<option value="'+m.v+'">'+m.l+'</option>';}).join('');
+  var rfHTML=reflections.length===0
+    ?'<div class="empty-state" style="margin:0 16px"><i class="ti ti-notebook"></i><p>No reflections yet.<br>Write your first one below.</p></div>'
+    :reflections.slice().reverse().map(function(r,ri){
+      var i=reflections.length-1-ri;
+      var mc=MOODS.find(function(x){return x.v===r.mood;})||MOODS[1];
+      return '<div class="rp-entry"><div class="rp-entry-head"><i class="ti ti-calendar" style="font-size:13px;color:var(--sub)"></i><span class="rp-entry-date">'+r.date+'</span><span class="badge-sm '+mc.cls+'">'+mc.l+'</span><span style="margin-left:auto;font-size:11px;color:var(--sub);font-weight:500">'+r.subject+'</span><button class="del-btn" onclick="deleteReflect('+i+')"><i class="ti ti-trash"></i></button></div><div class="rp-entry-text">'+r.text.replace(/</g,'&lt;')+'</div></div>';
+    }).join('');
+
+  var subjectOpts='<option value="Overall">Overall</option>'+allSubjs().map(function(s){return '<option value="'+s.label+'">'+s.label+'</option>';}).join('');
+
+  el.innerHTML='<div class="form-card"><div class="form-card-title"><i class="ti ti-pencil" style="color:var(--green)"></i>New reflection</div>'
+    +'<div class="fc-row" style="margin-bottom:12px"><div class="fc-field"><div class="fc-label">Date</div><input type="date" class="fc-inp" id="rf-date" value="'+today()+'"></div><div class="fc-field"><div class="fc-label">Mood</div><select class="fc-sel" id="rf-mood">'+moodOpts+'</select></div></div>'
+    +'<div class="fc-field" style="margin-bottom:12px"><div class="fc-label">Related subject</div><select class="fc-sel" id="rf-subj">'+subjectOpts+'</select></div>'
+    +'<div class="fc-field" style="margin-bottom:14px"><div class="fc-label">Write your reflection</div><textarea class="fc-ta" id="rf-text" placeholder="How did today go? What did you learn? What will you improve?"></textarea></div>'
+    +'<button class="fc-btn" onclick="saveReflect()"><i class="ti ti-check"></i>Save reflection</button>'
+    +'</div>'
+    +'<div class="sec-head"><span class="sec-title">Past reflections</span><span class="chip chip-green">'+reflections.length+'</span></div>'
+    +rfHTML;
+}
+
+function saveReflect(){
+  var text=document.getElementById('rf-text').value.trim();
+  if(!text){showToast('Please write something first');return;}
+  reflections.push({date:document.getElementById('rf-date').value,mood:document.getElementById('rf-mood').value,subject:document.getElementById('rf-subj').value,text:text});
+  saveData();showToast('Reflection saved ✓');renderReflect();
+}
+function deleteReflect(i){
+  if(!confirm('Delete this reflection?'))return;
+  reflections.splice(i,1);saveData();renderReflect();
+}
+function exportRewards() {
+
+  const backupData = {
+    entries: entries,
+    reflections: reflections,
+    exportDate: new Date().toISOString()
+  };
+  const blob = new Blob(
+    [JSON.stringify(backupData, null, 2)],
+    { type: "application/json" }
+  );
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "backup.json";
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast("Rewards exported");
+}
+
+function importRewards(event){
+
+  const file = event.target.files[0];
+  if(!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = function(e){
+    try{
+      const data = JSON.parse(e.target.result);
+
+      if(data.entries){
+        Object.keys(entries).forEach(key => entries[key] = []);
+
+        Object.keys(data.entries).forEach(key => {
+          if(entries[key] !== undefined){
+            entries[key] = data.entries[key];
+          }
+        });
+      }
+
+      if(data.reflections){
+        reflections = data.reflections;
+      }
+
+      saveData();
+      renderHome();
+      showToast("Rewards restored");
+
+    }catch(err){
+      alert("Invalid backup file");
+    }
+  };
+
+  reader.readAsText(file);
+}
+
+
+
+var calendarDate=new Date();
+function renderJourneyCalendar(){
+ var d=new Date(calendarDate.getFullYear(),calendarDate.getMonth(),1);
+ var first=(d.getDay()+6)%7;
+ var days=new Date(calendarDate.getFullYear(),calendarDate.getMonth()+1,0).getDate();
+ var active=new Set();
+ allSubjs().forEach(s=>entries[s.key].forEach(e=>active.add(e.date)));
+ runEntries.forEach(r=>active.add(r.date));
+ checkins.forEach(c=>active.add(c.date));
+ var h='<div class="card card-pad"><div style="display:flex;justify-content:space-between;margin-bottom:12px"><button class="sec-action" onclick="changeMonth(-1)">◀</button><strong>'+calendarDate.toLocaleString('en',{month:'long',year:'numeric'})+'</strong><button class="sec-action" onclick="changeMonth(1)">▶</button></div>';
+ h+='<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center;font-size:12px">';
+ ['Mo','Tu','We','Th','Fr','Sa','Su'].forEach(x=>h+='<div>'+x+'</div>');
+ for(let i=0;i<first;i++) h+='<div></div>';
+ for(let day=1;day<=days;day++){
+ let ds=new Date(calendarDate.getFullYear(),calendarDate.getMonth(),day).toISOString().slice(0,10);
+ let on=active.has(ds);
+ let isToday=(ds===new Date().toISOString().slice(0,10));
+ let style='padding:6px;border-radius:50%;text-align:center;';
+ if(isToday){style+='border:3px solid #4A7C59;';}
+ else if(on){style+='border:2px solid #378ADD;';}
+ else{style+='border:1px solid #D9D9D9;';}
+ h+='<div style="'+style+'">'+day+'</div>';
+}
+ h+='</div></div>';
+ return h;
+}
+function changeMonth(v){calendarDate.setMonth(calendarDate.getMonth()+v);renderHome();}
+
+// ── INIT ──
+loadData();
+renderHome();
+</script>
+</body>
+</html>
